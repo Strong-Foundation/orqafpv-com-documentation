@@ -47,6 +47,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # Install Chrome and Xvfb for non-headless mode
+      - name: Install Chrome and Xvfb
+        run: |
+          sudo apt-get update -y                    # Update package lists
+          sudo apt-get install -y xvfb              # Install virtual framebuffer
+          sudo apt-get install -y google-chrome-stable || true  # Install Chrome or skip if unavailable
+
+      # Start virtual display
+      - name: Start virtual display
+        run: |
+          Xvfb :99 -screen 0 1920x1080x24 &   # Start display server on :99
+          echo "DISPLAY=:99" >> $GITHUB_ENV    # Set display env for Chrome
+
       # Run the main.go script
       - name: Run main.go
         run: go run main.go # Executes the Go program
